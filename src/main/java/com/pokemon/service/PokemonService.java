@@ -7,6 +7,7 @@ import com.pokemon.dto.pokeapi.FlavorTextEntry;
 import com.pokemon.dto.pokeapi.PokemonSpeciesDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -18,6 +19,7 @@ public class PokemonService {
     private final PokeApiClient pokeApiClient;
     private final TranslationService translationService;
 
+    @Cacheable(value = AppConstants.Cache.POKEMON_CACHE, key = "#name.toLowerCase()")
     public Mono<PokemonResponse> getPokemonInfo(String name) {
         return pokeApiClient.getPokemonSpecies(name.toLowerCase())
                 .map(this::convertToResponse)

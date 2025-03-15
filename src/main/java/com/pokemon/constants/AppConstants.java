@@ -6,6 +6,15 @@ public final class AppConstants {
         throw new AssertionError("Constants class should not be instantiated");
     }
 
+    public static final class Cache {
+        public static final String POKEMON_CACHE = "pokemonCache";
+        public static final String TRANSLATION_CACHE = "translationCache";
+
+        private Cache() {
+            throw new AssertionError("Cache utility class should not be instantiated");
+        }
+    }
+
     public static final class Api {
         public static final String SHAKESPEARE_TRANSLATION = "shakespeare";
         public static final String YODA_TRANSLATION = "yoda";
