@@ -13,12 +13,12 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
+    private static final String ERROR_KEY = "error";
     @ExceptionHandler(PokemonNotFoundException.class)
     public ResponseEntity<Map<String, String>> handlePokemonNotFoundException(PokemonNotFoundException ex) {
         log.error("Pokemon not found: {}", ex.getMessage());
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put(ERROR_KEY, ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleTranslationException(TranslationException ex) {
         log.warn("Translation failed: {}", ex.getMessage());
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Could not apply translation. Using standard description instead.");
+        error.put(ERROR_KEY, "Could not apply translation. Using standard description instead.");
         return new ResponseEntity<>(error, HttpStatus.OK);
     }
 
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleWebClientResponseException(WebClientResponseException ex) {
         log.error("API error: {} - {}", ex.getStatusCode(), ex.getMessage());
         Map<String, String> error = new HashMap<>();
-        error.put("error", "External API error: " + ex.getStatusCode());
+        error.put(ERROR_KEY, "External API error: " + ex.getStatusCode());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
         log.error("Unexpected error: ", ex);
         Map<String, String> error = new HashMap<>();
-        error.put("error", "An unexpected error occurred");
+        error.put(ERROR_KEY, "An unexpected error occurred");
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
