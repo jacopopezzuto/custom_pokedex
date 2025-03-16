@@ -1,6 +1,6 @@
 package com.pokemon.config;
 
-import com.pokemon.constants.AppConstants;
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,16 +27,16 @@ class CacheConfigTest {
         Set<String> cacheNameSet = new HashSet<>(cacheNames);
 
         assertThat(cacheNameSet)
-                .contains(AppConstants.Cache.POKEMON_CACHE, AppConstants.Cache.TRANSLATION_CACHE);
+                .contains(TestConstants.Cache.POKEMON_CACHE, TestConstants.Cache.TRANSLATION_CACHE);
     }
 
     @Test
     void cacheShouldBeOfTypeCaffeine() {
         assertThat(cacheManager)
                 .satisfies(manager -> {
-                    assertThat(manager.getCache(AppConstants.Cache.POKEMON_CACHE))
+                    assertThat(manager.getCache(TestConstants.Cache.POKEMON_CACHE))
                             .isInstanceOf(CaffeineCache.class);
-                    assertThat(manager.getCache(AppConstants.Cache.TRANSLATION_CACHE))
+                    assertThat(manager.getCache(TestConstants.Cache.TRANSLATION_CACHE))
                             .isInstanceOf(CaffeineCache.class);
                 });
     }

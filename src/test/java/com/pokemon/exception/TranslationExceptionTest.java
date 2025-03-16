@@ -1,5 +1,6 @@
 package com.pokemon.exception;
 
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,7 +9,7 @@ class TranslationExceptionTest {
 
     @Test
     void constructorWithMessage_shouldSetMessage() {
-        String errorMessage = "Translation service unavailable";
+        String errorMessage = TestConstants.ErrorMessages.TRANSLATION_SERVICE_UNAVAILABLE;
 
         TranslationException exception = new TranslationException(errorMessage);
 
@@ -19,13 +20,13 @@ class TranslationExceptionTest {
 
     @Test
     void constructorWithMessageAndCause_shouldSetMessageAndCause() {
-        String errorMessage = "Translation service unavailable";
-        Throwable cause = new RuntimeException("Connection timeout");
+        Throwable cause = new RuntimeException(TestConstants.ErrorMessages.CONNECTION_TIMEOUT);
 
-        TranslationException exception = new TranslationException(errorMessage, cause);
+        TranslationException exception = new TranslationException(
+                TestConstants.ErrorMessages.TRANSLATION_SERVICE_UNAVAILABLE, cause);
 
         assertThat(exception)
-                .hasMessage(errorMessage)
+                .hasMessage(TestConstants.ErrorMessages.TRANSLATION_SERVICE_UNAVAILABLE)
                 .hasCause(cause);
     }
 }

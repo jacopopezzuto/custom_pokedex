@@ -1,6 +1,7 @@
 package com.pokemon.integration;
 
 import com.pokemon.PokedexApplication;
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,46 +20,46 @@ class BasicPokemonApiIntegrationTest {
     @Test
     void getPikachu_returnsCorrectDetails() {
         webTestClient.get()
-                .uri("/pokemon/pikachu")
+                .uri("/pokemon/" + TestConstants.Names.PIKACHU)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo("pikachu")
-                .jsonPath("$.description").isEqualTo("When several of these POKéMON gather, their electricity could build and cause lightning storms.")
-                .jsonPath("$.habitat").isEqualTo("forest")
-                .jsonPath("$.legendary").isEqualTo(false);
+                .jsonPath("$.name").isEqualTo(TestConstants.Names.PIKACHU)
+                .jsonPath("$.description").isEqualTo(TestConstants.Descriptions.PIKACHU_STANDARD)
+                .jsonPath("$.habitat").isEqualTo(TestConstants.Habitats.FOREST)
+                .jsonPath("$.legendary").isEqualTo(TestConstants.Legendary.FALSE);
     }
 
     @Test
     void getMewtwo_returnsLegendaryPokemon() {
         webTestClient.get()
-                .uri("/pokemon/mewtwo")
+                .uri("/pokemon/" + TestConstants.Names.MEWTWO)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo("mewtwo")
-                .jsonPath("$.habitat").isEqualTo("rare")
-                .jsonPath("$.legendary").isEqualTo(true)
-                .jsonPath("$.description").isEqualTo("It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.");
+                .jsonPath("$.name").isEqualTo(TestConstants.Names.MEWTWO)
+                .jsonPath("$.habitat").isEqualTo(TestConstants.Habitats.RARE)
+                .jsonPath("$.legendary").isEqualTo(TestConstants.Legendary.TRUE)
+                .jsonPath("$.description").isEqualTo(TestConstants.Descriptions.MEWTWO_STANDARD);
     }
 
     @Test
     void getZubat_returnsCaveHabitat() {
         webTestClient.get()
-                .uri("/pokemon/zubat")
+                .uri("/pokemon/" + TestConstants.Names.ZUBAT)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.name").isEqualTo("zubat")
-                .jsonPath("$.description").isEqualTo("Forms colonies in perpetually dark places. Uses ultrasonic waves to identify and approach targets.")
-                .jsonPath("$.habitat").isEqualTo("cave")
-                .jsonPath("$.legendary").isEqualTo(false);
+                .jsonPath("$.name").isEqualTo(TestConstants.Names.ZUBAT)
+                .jsonPath("$.description").isEqualTo(TestConstants.Descriptions.ZUBAT_STANDARD)
+                .jsonPath("$.habitat").isEqualTo(TestConstants.Habitats.CAVE)
+                .jsonPath("$.legendary").isEqualTo(TestConstants.Legendary.FALSE);
     }
 
     @Test
     void getNonExistentPokemon_returns404() {
         webTestClient.get()
-                .uri("/pokemon/nonexistent")
+                .uri("/pokemon/" + TestConstants.Names.NONEXISTENT_POKEMON)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()

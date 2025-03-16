@@ -2,6 +2,7 @@ package com.pokemon.controller;
 
 import com.pokemon.dto.PokemonResponse;
 import com.pokemon.service.PokemonService;
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +27,16 @@ class PokemonControllerTest {
     @Test
     void getPokemon_shouldReturnPokemonInfo() {
         PokemonResponse mewtwo = PokemonResponse.builder()
-                .name("mewtwo")
-                .description("It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.")
-                .habitat("rare")
-                .isLegendary(true)
+                .name(TestConstants.Names.MEWTWO)
+                .description(TestConstants.Descriptions.MEWTWO_STANDARD)
+                .habitat(TestConstants.Habitats.RARE)
+                .isLegendary(TestConstants.Legendary.TRUE)
                 .build();
 
-        when(pokemonService.getPokemonInfo("mewtwo")).thenReturn(Mono.just(mewtwo));
+        when(pokemonService.getPokemonInfo(TestConstants.Names.MEWTWO)).thenReturn(Mono.just(mewtwo));
 
         webTestClient.get()
-                .uri("/pokemon/mewtwo")
+                .uri("/pokemon/" + TestConstants.Names.MEWTWO)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PokemonResponse.class)
@@ -45,16 +46,16 @@ class PokemonControllerTest {
     @Test
     void getTranslatedPokemon_shouldReturnTranslatedPokemonInfo() {
         PokemonResponse translatedMewtwo = PokemonResponse.builder()
-                .name("mewtwo")
-                .description("Created by a scientist after years of horrific gene splicing and dna engineering experiments, it was.")
-                .habitat("rare")
-                .isLegendary(true)
+                .name(TestConstants.Names.MEWTWO)
+                .description(TestConstants.Descriptions.MEWTWO_YODA)
+                .habitat(TestConstants.Habitats.RARE)
+                .isLegendary(TestConstants.Legendary.TRUE)
                 .build();
 
-        when(pokemonService.getTranslatedPokemonInfo("mewtwo")).thenReturn(Mono.just(translatedMewtwo));
+        when(pokemonService.getTranslatedPokemonInfo(TestConstants.Names.MEWTWO)).thenReturn(Mono.just(translatedMewtwo));
 
         webTestClient.get()
-                .uri("/pokemon/translated/mewtwo")
+                .uri("/pokemon/translated/" + TestConstants.Names.MEWTWO)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PokemonResponse.class)

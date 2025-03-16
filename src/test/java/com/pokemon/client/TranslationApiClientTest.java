@@ -2,8 +2,8 @@ package com.pokemon.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pokemon.dto.translator.TranslationResponse;
 import com.pokemon.exception.TranslationException;
+import com.pokemon.util.TestConstants;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.*;
@@ -42,20 +42,7 @@ class TranslationApiClientTest {
 
     @Test
     void translateToShakespeare_shouldReturnTranslatedText() throws JsonProcessingException {
-        TranslationResponse response = new TranslationResponse();
-
-        TranslationResponse.Success success = new TranslationResponse.Success();
-        success.setTotal(1);
-
-        TranslationResponse.Contents contents = new TranslationResponse.Contents();
-        contents.setTranslated("At which hour several of these pokémon gather, their electricity couldst buildeth and cause lightning storms.");
-        contents.setText("When several of these POKéMON gather, their electricity could build and cause lightning storms.");
-        contents.setTranslation("shakespeare");
-
-        response.setSuccess(success);
-        response.setContents(contents);
-
-        String mockResponseBody = objectMapper.writeValueAsString(response);
+        String mockResponseBody = new ObjectMapper().writeValueAsString(TestConstants.TestObjects.SHAKESPEARE_TRANSLATION_RESPONSE);
 
         mockWebServer.enqueue(
                 new MockResponse()
@@ -64,29 +51,17 @@ class TranslationApiClientTest {
                         .setBody(mockResponseBody)
         );
 
-        var result = translationApiClient.translateToShakespeare("When several of these POKéMON gather, their electricity could build and cause lightning storms.");
+        var result = translationApiClient.translateToShakespeare(TestConstants.Descriptions.PIKACHU_STANDARD);
 
         StepVerifier.create(result)
-                .expectNext("At which hour several of these pokémon gather, their electricity couldst buildeth and cause lightning storms.")
+                .expectNext(TestConstants.Descriptions.PIKACHU_SHAKESPEARE)
                 .verifyComplete();
     }
 
+
     @Test
     void translateToYoda_shouldReturnTranslatedText() throws JsonProcessingException {
-        TranslationResponse response = new TranslationResponse();
-
-        TranslationResponse.Success success = new TranslationResponse.Success();
-        success.setTotal(1);
-
-        TranslationResponse.Contents contents = new TranslationResponse.Contents();
-        contents.setTranslated("Forms colonies in perpetually dark places. Ultrasonic waves to identify and approach targets, uses.");
-        contents.setText("Forms colonies in perpetually dark places. Uses ultrasonic waves to identify and approach targets.");
-        contents.setTranslation("yoda");
-
-        response.setSuccess(success);
-        response.setContents(contents);
-
-        String mockResponseBody = objectMapper.writeValueAsString(response);
+        String mockResponseBody = objectMapper.writeValueAsString(TestConstants.TestObjects.YODA_TRANSLATION_RESPONSE);
 
         mockWebServer.enqueue(
                 new MockResponse()
@@ -95,10 +70,10 @@ class TranslationApiClientTest {
                         .setBody(mockResponseBody)
         );
 
-        var result = translationApiClient.translateToYoda("Forms colonies in perpetually dark places. Uses ultrasonic waves to identify and approach targets.");
+        var result = translationApiClient.translateToYoda(TestConstants.Descriptions.ZUBAT_STANDARD);
 
         StepVerifier.create(result)
-                .expectNext("Forms colonies in perpetually dark places. Ultrasonic waves to identify and approach targets, uses.")
+                .expectNext(TestConstants.Descriptions.ZUBAT_YODA)
                 .verifyComplete();
     }
 
@@ -108,10 +83,10 @@ class TranslationApiClientTest {
                 new MockResponse()
                         .setResponseCode(429)
                         .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .setBody("{\"error\": {\"code\": 429, \"message\": \"Too many requests\"}}")
+                        .setBody(TestConstants.ErrorResponses.TOO_MANY_REQUESTS)
         );
 
-        var result = translationApiClient.translateToShakespeare("text to translate");
+        var result = translationApiClient.translateToShakespeare(TestConstants.Descriptions.PIKACHU_STANDARD);
 
         StepVerifier.create(result)
                 .expectError(TranslationException.class)

@@ -1,6 +1,7 @@
 package com.pokemon.service;
 
 import com.pokemon.client.TranslationApiClient;
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,30 +23,25 @@ class TranslationServiceTest {
 
     @Test
     void translateToShakespeare_shouldReturnTranslatedText() {
-        String original = "When several of these POKéMON gather, their electricity could build and cause lightning storms.";
-        String translated = "At which hour several of these pokémon gather,  their electricity couldst buildeth and cause lightning storms.";
+        when(translationApiClient.translateToShakespeare(TestConstants.Descriptions.PIKACHU_STANDARD))
+                .thenReturn(Mono.just(TestConstants.Descriptions.PIKACHU_SHAKESPEARE));
 
-        when(translationApiClient.translateToShakespeare(original)).thenReturn(Mono.just(translated));
-
-        Mono<String> result = translationService.translateToShakespeare(original);
+        Mono<String> result = translationService.translateToShakespeare(TestConstants.Descriptions.PIKACHU_STANDARD);
 
         StepVerifier.create(result)
-                .expectNext(translated)
+                .expectNext(TestConstants.Descriptions.PIKACHU_SHAKESPEARE)
                 .verifyComplete();
     }
 
     @Test
     void translateToYoda_shouldReturnTranslatedText() {
-        String original = "Forms colonies in perpetually dark places. Uses ultrasonic waves to identify and approach targets.";
-        String translated = "Forms colonies in perpetually dark places.Ultrasonic waves to identify and approach targets,  uses.";
+        when(translationApiClient.translateToYoda(TestConstants.Descriptions.ZUBAT_STANDARD))
+                .thenReturn(Mono.just(TestConstants.Descriptions.ZUBAT_YODA));
 
-
-        when(translationApiClient.translateToYoda(original)).thenReturn(Mono.just(translated));
-
-        Mono<String> result = translationService.translateToYoda(original);
+        Mono<String> result = translationService.translateToYoda(TestConstants.Descriptions.ZUBAT_STANDARD);
 
         StepVerifier.create(result)
-                .expectNext(translated)
+                .expectNext(TestConstants.Descriptions.ZUBAT_YODA)
                 .verifyComplete();
     }
 }

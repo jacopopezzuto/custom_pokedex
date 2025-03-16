@@ -3,11 +3,11 @@ package com.pokemon.integration;
 import com.pokemon.PokedexApplication;
 import com.pokemon.client.PokeApiClient;
 import com.pokemon.client.TranslationApiClient;
-import com.pokemon.constants.AppConstants;
 import com.pokemon.dto.PokemonResponse;
 import com.pokemon.dto.pokeapi.FlavorTextEntry;
 import com.pokemon.dto.pokeapi.PokemonSpeciesDto;
 import com.pokemon.dto.translator.TranslationResponse;
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,29 +45,29 @@ class CacheIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        cacheManager.getCache(AppConstants.Cache.POKEMON_CACHE).clear();
-        cacheManager.getCache(AppConstants.Cache.TRANSLATION_CACHE).clear();
+        cacheManager.getCache(TestConstants.Cache.POKEMON_CACHE).clear();
+        cacheManager.getCache(TestConstants.Cache.TRANSLATION_CACHE).clear();
 
         FlavorTextEntry.Language english = new FlavorTextEntry.Language();
-        english.setName("en");
+        english.setName(TestConstants.Languages.ENGLISH);
 
         FlavorTextEntry flavorTextEntry = new FlavorTextEntry();
-        flavorTextEntry.setFlavorText("When several of these POKéMON gather, their electricity could build and cause lightning storms.");
+        flavorTextEntry.setFlavorText(TestConstants.Descriptions.PIKACHU_STANDARD);
         flavorTextEntry.setLanguage(english);
 
         PokemonSpeciesDto.Habitat habitat = new PokemonSpeciesDto.Habitat();
-        habitat.setName("forest");
+        habitat.setName(TestConstants.Habitats.FOREST);
 
         pikachu = new PokemonSpeciesDto();
-        pikachu.setName("pikachu");
+        pikachu.setName(TestConstants.Names.PIKACHU);
         pikachu.setFlavorTextEntries(Collections.singletonList(flavorTextEntry));
         pikachu.setHabitat(habitat);
-        pikachu.setLegendary(false);
+        pikachu.setLegendary(TestConstants.Legendary.FALSE);
 
         translationContents = new TranslationResponse.Contents();
-        translationContents.setTranslated("When several of these pokémon gather, their electricity couldst buildeth and cause lightning storms.");
-        translationContents.setText("When several of these POKéMON gather, their electricity could build and cause lightning storms.");
-        translationContents.setTranslation("shakespeare");
+        translationContents.setTranslated(TestConstants.Descriptions.PIKACHU_SHAKESPEARE);
+        translationContents.setText(TestConstants.Descriptions.PIKACHU_STANDARD);
+        translationContents.setTranslation(TestConstants.Translations.SHAKESPEARE);
 
         TranslationResponse.Success success = new TranslationResponse.Success();
         success.setTotal(1);
@@ -79,26 +79,26 @@ class CacheIntegrationTest {
 
     @Test
     void pokemonCache_shouldReduceApiCalls() {
-        when(pokeApiClient.getPokemonSpecies("pikachu")).thenReturn(Mono.just(pikachu));
+        when(pokeApiClient.getPokemonSpecies(TestConstants.Names.PIKACHU)).thenReturn(Mono.just(pikachu));
 
         webTestClient.get()
-                .uri("/pokemon/pikachu")
+                .uri("/pokemon/" + TestConstants.Names.PIKACHU)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PokemonResponse.class);
 
-        verify(pokeApiClient, times(1)).getPokemonSpecies("pikachu");
+        verify(pokeApiClient, times(1)).getPokemonSpecies(TestConstants.Names.PIKACHU);
     }
 
     @Test
     void translationCache_shouldReduceApiCalls() {
-        when(pokeApiClient.getPokemonSpecies("pikachu")).thenReturn(Mono.just(pikachu));
+        when(pokeApiClient.getPokemonSpecies(TestConstants.Names.PIKACHU)).thenReturn(Mono.just(pikachu));
         when(translationApiClient.translateToShakespeare(anyString())).thenReturn(
                 Mono.just(translationContents.getTranslated())
         );
 
         webTestClient.get()
-                .uri("/pokemon/translated/pikachu")
+                .uri("/pokemon/translated/" + TestConstants.Names.PIKACHU)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(PokemonResponse.class);

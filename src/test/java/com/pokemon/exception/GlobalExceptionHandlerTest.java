@@ -1,5 +1,6 @@
 package com.pokemon.exception;
 
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handlePokemonNotFoundException_shouldReturnNotFoundStatus() {
-        PokemonNotFoundException exception = new PokemonNotFoundException("pikachu");
+        PokemonNotFoundException exception = new PokemonNotFoundException(TestConstants.Names.PIKACHU);
 
         ResponseEntity<Map<String, String>> response = handler.handlePokemonNotFoundException(exception);
 
@@ -25,13 +26,16 @@ class GlobalExceptionHandlerTest {
                 .satisfies(r -> {
                     assertThat(r.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
                     assertThat(r.getBody())
-                            .containsEntry("error", "Pokemon not found with name: pikachu");
+                            .containsEntry(TestConstants.ErrorMessages.ERROR,
+                                    String.format(TestConstants.ErrorMessages.POKEMON_NOT_FOUND_FORMAT,
+                                            TestConstants.Names.PIKACHU));
                 });
     }
 
     @Test
     void handleTranslationException_shouldReturnOkStatus() {
-        TranslationException exception = new TranslationException("Translation service unavailable");
+        TranslationException exception = new TranslationException(
+                TestConstants.ErrorMessages.TRANSLATION_SERVICE_UNAVAILABLE);
 
         ResponseEntity<Map<String, String>> response = handler.handleTranslationException(exception);
 
@@ -39,7 +43,8 @@ class GlobalExceptionHandlerTest {
                 .satisfies(r -> {
                     assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
                     assertThat(r.getBody())
-                            .containsEntry("error", "Could not apply translation. Using standard description instead.");
+                            .containsEntry(TestConstants.ErrorMessages.ERROR,
+                                    TestConstants.ErrorMessages.TRANSLATION_UNAVAILABLE);
                 });
     }
 
@@ -47,7 +52,7 @@ class GlobalExceptionHandlerTest {
     void handleWebClientResponseException_shouldReturnInternalServerError() {
         WebClientResponseException exception = mock(WebClientResponseException.class);
         when(exception.getStatusCode()).thenReturn(HttpStatus.BAD_REQUEST);
-        when(exception.getMessage()).thenReturn("Bad Request");
+        when(exception.getMessage()).thenReturn(TestConstants.ErrorMessages.BAD_REQUEST);
 
         ResponseEntity<Map<String, String>> response = handler.handleWebClientResponseException(exception);
 
@@ -55,7 +60,9 @@ class GlobalExceptionHandlerTest {
                 .satisfies(r -> {
                     assertThat(r.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
                     assertThat(r.getBody())
-                            .containsEntry("error", "External API error: 400 BAD_REQUEST");
+                            .containsEntry(TestConstants.ErrorMessages.ERROR,
+                                    String.format(TestConstants.ErrorMessages.EXTERNAL_API_ERROR_FORMAT,
+                                            "400", "BAD_REQUEST"));
                 });
     }
 
@@ -69,7 +76,8 @@ class GlobalExceptionHandlerTest {
                 .satisfies(r -> {
                     assertThat(r.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
                     assertThat(r.getBody())
-                            .containsEntry("error", "An unexpected error occurred");
+                            .containsEntry(TestConstants.ErrorMessages.ERROR,
+                                    TestConstants.ErrorMessages.UNEXPECTED_ERROR);
                 });
     }
 }

@@ -1,5 +1,6 @@
 package com.pokemon.constants;
 
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,16 +38,16 @@ class AppConstantsTest {
 
     @Test
     void constantsShouldHaveCorrectValues() {
-        assertThat(AppConstants.Cache.POKEMON_CACHE).isEqualTo("pokemonCache");
-        assertThat(AppConstants.Cache.TRANSLATION_CACHE).isEqualTo("translationCache");
+        assertThat(TestConstants.Cache.POKEMON_CACHE).isEqualTo(AppConstants.Cache.POKEMON_CACHE);
+        assertThat(TestConstants.Cache.TRANSLATION_CACHE).isEqualTo(AppConstants.Cache.TRANSLATION_CACHE);
 
-        assertThat(AppConstants.Api.SHAKESPEARE_TRANSLATION).isEqualTo("shakespeare");
-        assertThat(AppConstants.Api.YODA_TRANSLATION).isEqualTo("yoda");
-        assertThat(AppConstants.Api.CAVE_HABITAT).isEqualTo("cave");
+        assertThat(TestConstants.Translations.SHAKESPEARE).isEqualTo(AppConstants.Api.SHAKESPEARE_TRANSLATION);
+        assertThat(TestConstants.Translations.YODA).isEqualTo(AppConstants.Api.YODA_TRANSLATION);
+        assertThat(TestConstants.Habitats.CAVE).isEqualTo(AppConstants.Api.CAVE_HABITAT);
 
-        assertThat(AppConstants.WebClient.DEFAULT_TIMEOUT_MS).isEqualTo(5000);
-        assertThat(16 * 1024 * 1024).isEqualTo(AppConstants.WebClient.DEFAULT_MAX_MEMORY_SIZE);
+        assertThat(TestConstants.Config.DEFAULT_TIMEOUT_MS).isEqualTo(AppConstants.WebClient.DEFAULT_TIMEOUT_MS);
+        assertThat(TestConstants.Config.DEFAULT_MAX_MEMORY_SIZE).isEqualTo(AppConstants.WebClient.DEFAULT_MAX_MEMORY_SIZE);
 
-        assertThat(AppConstants.Language.ENGLISH).isEqualTo("en");
+        assertThat(TestConstants.Languages.ENGLISH).isEqualTo(AppConstants.Language.ENGLISH);
     }
 }

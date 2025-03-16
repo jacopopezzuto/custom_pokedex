@@ -4,6 +4,7 @@ import com.pokemon.client.PokeApiClient;
 import com.pokemon.dto.PokemonResponse;
 import com.pokemon.dto.pokeapi.FlavorTextEntry;
 import com.pokemon.dto.pokeapi.PokemonSpeciesDto;
+import com.pokemon.util.TestConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,34 +37,32 @@ class PokemonServiceTest {
     @Test
     void getPokemonInfo_shouldReturnCorrectInfo() {
         PokemonSpeciesDto speciesDto = createMewtwoSpecies();
-        when(pokeApiClient.getPokemonSpecies("mewtwo")).thenReturn(Mono.just(speciesDto));
+        when(pokeApiClient.getPokemonSpecies(TestConstants.Names.MEWTWO)).thenReturn(Mono.just(speciesDto));
 
-        Mono<PokemonResponse> result = pokemonService.getPokemonInfo("mewtwo");
+        Mono<PokemonResponse> result = pokemonService.getPokemonInfo(TestConstants.Names.MEWTWO);
 
         StepVerifier.create(result)
                 .expectNextMatches(response ->
-                        response.getName().equals("mewtwo") &&
-                                response.getDescription().equals("It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.") &&
-                                response.getHabitat().equals("rare") &&
-                                response.isLegendary())
+                        response.getName().equals(TestConstants.Names.MEWTWO) &&
+                                response.getDescription().equals(TestConstants.Descriptions.MEWTWO_STANDARD) &&
+                                response.getHabitat().equals(TestConstants.Habitats.RARE) &&
+                                response.isLegendary() == TestConstants.Legendary.TRUE)
                 .verifyComplete();
     }
 
     @Test
     void getTranslatedPokemonInfo_shouldTranslateToYodaForLegendaryPokemon() {
-        String originalDescription = "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.";
-        String yodaTranslation = "Created by a scientist after years of horrific gene splicing and dna engineering experiments, it was.";
+        when(pokeApiClient.getPokemonSpecies(TestConstants.Names.MEWTWO)).thenReturn(Mono.just(createMewtwoSpecies()));
+        when(translationService.translateToYoda(TestConstants.Descriptions.MEWTWO_STANDARD))
+                .thenReturn(Mono.just(TestConstants.Descriptions.MEWTWO_YODA));
 
-        when(pokeApiClient.getPokemonSpecies("mewtwo")).thenReturn(Mono.just(createMewtwoSpecies()));
-        when(translationService.translateToYoda(originalDescription)).thenReturn(Mono.just(yodaTranslation));
-
-        Mono<PokemonResponse> result = pokemonService.getTranslatedPokemonInfo("mewtwo");
+        Mono<PokemonResponse> result = pokemonService.getTranslatedPokemonInfo(TestConstants.Names.MEWTWO);
 
         StepVerifier.create(result)
                 .expectNextMatches(response ->
-                        response.getName().equals("mewtwo") &&
-                                response.getDescription().equals(yodaTranslation) &&
-                                response.getHabitat().equals("rare") &&
+                        response.getName().equals(TestConstants.Names.MEWTWO) &&
+                                response.getDescription().equals(TestConstants.Descriptions.MEWTWO_YODA) &&
+                                response.getHabitat().equals(TestConstants.Habitats.RARE) &&
                                 response.isLegendary())
                 .verifyComplete();
     }
@@ -71,35 +70,33 @@ class PokemonServiceTest {
     @Test
     void getTranslatedPokemonInfo_shouldTranslateToYodaForCaveHabitat() {
         PokemonSpeciesDto caveSpecies = new PokemonSpeciesDto();
-        caveSpecies.setName("zubat");
+        caveSpecies.setName(TestConstants.Names.ZUBAT);
 
         FlavorTextEntry.Language english = new FlavorTextEntry.Language();
-        english.setName("en");
+        english.setName(TestConstants.Languages.ENGLISH);
 
         FlavorTextEntry entry = new FlavorTextEntry();
-        entry.setFlavorText("Forms colonies in perpetually dark places and uses ultrasonic waves to identify and approach targets.");
+        entry.setFlavorText(TestConstants.Descriptions.ZUBAT_STANDARD);
         entry.setLanguage(english);
 
         PokemonSpeciesDto.Habitat habitat = new PokemonSpeciesDto.Habitat();
-        habitat.setName("cave");
+        habitat.setName(TestConstants.Habitats.CAVE);
 
         caveSpecies.setFlavorTextEntries(List.of(entry));
         caveSpecies.setHabitat(habitat);
-        caveSpecies.setLegendary(false);
+        caveSpecies.setLegendary(TestConstants.Legendary.FALSE);
 
-        String originalDescription = "Forms colonies in perpetually dark places and uses ultrasonic waves to identify and approach targets.";
-        String yodaTranslation = "Forms colonies in perpetually dark places, it does. Uses ultrasonic waves to identify and approach targets, it does.";
+        when(pokeApiClient.getPokemonSpecies(TestConstants.Names.ZUBAT)).thenReturn(Mono.just(caveSpecies));
+        when(translationService.translateToYoda(TestConstants.Descriptions.ZUBAT_STANDARD))
+                .thenReturn(Mono.just(TestConstants.Descriptions.ZUBAT_YODA));
 
-        when(pokeApiClient.getPokemonSpecies("zubat")).thenReturn(Mono.just(caveSpecies));
-        when(translationService.translateToYoda(originalDescription)).thenReturn(Mono.just(yodaTranslation));
-
-        Mono<PokemonResponse> result = pokemonService.getTranslatedPokemonInfo("zubat");
+        Mono<PokemonResponse> result = pokemonService.getTranslatedPokemonInfo(TestConstants.Names.ZUBAT);
 
         StepVerifier.create(result)
                 .expectNextMatches(response ->
-                        response.getName().equals("zubat") &&
-                                response.getDescription().equals(yodaTranslation) &&
-                                response.getHabitat().equals("cave") &&
+                        response.getName().equals(TestConstants.Names.ZUBAT) &&
+                                response.getDescription().equals(TestConstants.Descriptions.ZUBAT_YODA) &&
+                                response.getHabitat().equals(TestConstants.Habitats.CAVE) &&
                                 !response.isLegendary())
                 .verifyComplete();
     }
@@ -107,53 +104,49 @@ class PokemonServiceTest {
     @Test
     void getTranslatedPokemonInfo_shouldTranslateToShakespeareForNormalPokemon() {
         PokemonSpeciesDto normalSpecies = new PokemonSpeciesDto();
-        normalSpecies.setName("pikachu");
+        normalSpecies.setName(TestConstants.Names.PIKACHU);
 
         FlavorTextEntry.Language english = new FlavorTextEntry.Language();
-        english.setName("en");
+        english.setName(TestConstants.Languages.ENGLISH);
 
         FlavorTextEntry entry = new FlavorTextEntry();
-        entry.setFlavorText("When several of these Pokémon gather, their electricity could build and cause lightning storms.");
+        entry.setFlavorText(TestConstants.Descriptions.PIKACHU_STANDARD);
         entry.setLanguage(english);
 
         PokemonSpeciesDto.Habitat habitat = new PokemonSpeciesDto.Habitat();
-        habitat.setName("forest");
+        habitat.setName(TestConstants.Habitats.FOREST);
 
         normalSpecies.setFlavorTextEntries(List.of(entry));
         normalSpecies.setHabitat(habitat);
-        normalSpecies.setLegendary(false);
+        normalSpecies.setLegendary(TestConstants.Legendary.FALSE);
 
-        String originalDescription = "When several of these Pokémon gather, their electricity could build and cause lightning storms.";
-        String shakespeareTranslation = "When several of these pokémon gather, their electricity couldst buildeth and cause lightning storms.";
+        when(pokeApiClient.getPokemonSpecies(TestConstants.Names.PIKACHU)).thenReturn(Mono.just(normalSpecies));
+        when(translationService.translateToShakespeare(TestConstants.Descriptions.PIKACHU_STANDARD))
+                .thenReturn(Mono.just(TestConstants.Descriptions.PIKACHU_SHAKESPEARE));
 
-        when(pokeApiClient.getPokemonSpecies("pikachu")).thenReturn(Mono.just(normalSpecies));
-        when(translationService.translateToShakespeare(originalDescription)).thenReturn(Mono.just(shakespeareTranslation));
-
-        Mono<PokemonResponse> result = pokemonService.getTranslatedPokemonInfo("pikachu");
+        Mono<PokemonResponse> result = pokemonService.getTranslatedPokemonInfo(TestConstants.Names.PIKACHU);
 
         StepVerifier.create(result)
                 .expectNextMatches(response ->
-                        response.getName().equals("pikachu") &&
-                                response.getDescription().equals(shakespeareTranslation) &&
-                                response.getHabitat().equals("forest") &&
+                        response.getName().equals(TestConstants.Names.PIKACHU) &&
+                                response.getDescription().equals(TestConstants.Descriptions.PIKACHU_SHAKESPEARE) &&
+                                response.getHabitat().equals(TestConstants.Habitats.FOREST) &&
                                 !response.isLegendary())
                 .verifyComplete();
     }
 
     @Test
     void getTranslatedPokemonInfo_shouldFallbackToOriginalDescriptionOnTranslationError() {
-        String originalDescription = "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.";
-
-        when(pokeApiClient.getPokemonSpecies("mewtwo")).thenReturn(Mono.just(createMewtwoSpecies()));
+        when(pokeApiClient.getPokemonSpecies(TestConstants.Names.MEWTWO)).thenReturn(Mono.just(createMewtwoSpecies()));
         when(translationService.translateToYoda(anyString())).thenReturn(Mono.error(new RuntimeException("Translation failed")));
 
-        Mono<PokemonResponse> result = pokemonService.getTranslatedPokemonInfo("mewtwo");
+        Mono<PokemonResponse> result = pokemonService.getTranslatedPokemonInfo(TestConstants.Names.MEWTWO);
 
         StepVerifier.create(result)
                 .expectNextMatches(response ->
-                        response.getName().equals("mewtwo") &&
-                                response.getDescription().equals(originalDescription) &&
-                                response.getHabitat().equals("rare") &&
+                        response.getName().equals(TestConstants.Names.MEWTWO) &&
+                                response.getDescription().equals(TestConstants.Descriptions.MEWTWO_STANDARD) &&
+                                response.getHabitat().equals(TestConstants.Habitats.RARE) &&
                                 response.isLegendary())
                 .verifyComplete();
     }
@@ -165,14 +158,14 @@ class PokemonServiceTest {
         speciesDto.setHabitat(null);
 
         FlavorTextEntry.Language english = new FlavorTextEntry.Language();
-        english.setName("en");
+        english.setName(TestConstants.Languages.ENGLISH);
 
         FlavorTextEntry entry = new FlavorTextEntry();
         entry.setFlavorText("Test description");
         entry.setLanguage(english);
 
         speciesDto.setFlavorTextEntries(List.of(entry));
-        speciesDto.setLegendary(false);
+        speciesDto.setLegendary(TestConstants.Legendary.FALSE);
 
         try {
             Method convertMethod = PokemonService.class.getDeclaredMethod("convertToResponse", PokemonSpeciesDto.class);
@@ -198,7 +191,7 @@ class PokemonServiceTest {
 
             String description = (String) extractMethod.invoke(pokemonService, speciesDto);
 
-            assertThat(description).isEqualTo("No description available");
+            assertThat(description).isEqualTo(TestConstants.ErrorMessages.NO_DESCRIPTION_AVAILABLE);
         } catch (Exception e) {
             fail("Test failed: " + e.getMessage());
         }
@@ -206,20 +199,20 @@ class PokemonServiceTest {
 
     private PokemonSpeciesDto createMewtwoSpecies() {
         FlavorTextEntry.Language english = new FlavorTextEntry.Language();
-        english.setName("en");
+        english.setName(TestConstants.Languages.ENGLISH);
 
         FlavorTextEntry englishEntry = new FlavorTextEntry();
-        englishEntry.setFlavorText("It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.");
+        englishEntry.setFlavorText(TestConstants.Descriptions.MEWTWO_STANDARD);
         englishEntry.setLanguage(english);
 
         PokemonSpeciesDto.Habitat habitat = new PokemonSpeciesDto.Habitat();
-        habitat.setName("rare");
+        habitat.setName(TestConstants.Habitats.RARE);
 
         PokemonSpeciesDto species = new PokemonSpeciesDto();
-        species.setName("mewtwo");
+        species.setName(TestConstants.Names.MEWTWO);
         species.setFlavorTextEntries(List.of(englishEntry));
         species.setHabitat(habitat);
-        species.setLegendary(true);
+        species.setLegendary(TestConstants.Legendary.TRUE);
 
         return species;
     }
