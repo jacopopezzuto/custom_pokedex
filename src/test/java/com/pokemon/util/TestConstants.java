@@ -23,11 +23,11 @@ public final class TestConstants {
         public static final String PIKACHU_FRENCH =
                 "Ce Pokémon dispose de petites poches dans les joues pour\\nstocker de l'électricité. Elles semblent se charger pendant\\nque Pikachu dort. Il libère parfois un peu d'électricité\\nlorsqu'il n'est pas encore bien réveillé.";
         public static final String PIKACHU_SHAKESPEARE =
-                "At which hour several of these pokémon gather, their electricity couldst buildeth and cause lightning storms.";
+                "At which hour several of these pokémon gather,  their electricity couldst buildeth and cause lightning storms.";
         public static final String ZUBAT_STANDARD =
                 "Forms colonies in perpetually dark places. Uses ultrasonic waves to identify and approach targets.";
         public static final String ZUBAT_YODA =
-                "Forms colonies in perpetually dark places. Ultrasonic waves to identify and approach targets, uses.";
+                "Forms colonies in perpetually dark places.Ultrasonic waves to identify and approach targets,  uses.";
 
         public static final String MEWTWO_STANDARD =
                 "It was created by a scientist after years of horrific gene splicing and DNA engineering experiments.";
