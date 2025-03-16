@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: Pokemon API
+  description: API for retrieving Pokemon information with fun translations
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+
+paths:
+  /pokemon/{name}:
+    get:
+      summary: Get basic Pokemon information
+      description: Returns standard Pokemon information including description, habitat and legendary status
+      operationId: getPokemon
+      tags:
+        - Pokemon
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Pokemon name
+          schema:
+            type: string
+            example: pikachu
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PokemonResponse'
+        '404':
+          description: Pokemon not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Pokemon not found with name: unknown
+
+  /pokemon/translated/{name}:
+    get:
+      summary: Get Pokemon with translated description
+      description: Returns Pokemon information with Yoda translation (for legendary or cave Pokemon) or Shakespeare translation (for others)
+      operationId: getTranslatedPokemon
+      tags:
+        - Pokemon
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Pokemon name
+          schema:
+            type: string
+            example: mewtwo
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PokemonResponse'
+        '404':
+          description: Pokemon not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Pokemon not found with name: unknown
+
+components:
+  schemas:
+    PokemonResponse:
+      type: object
+      required:
+        - name
+        - description
+        - habitat
+        - legendary
+      properties:
+        name:
+          type: string
+          description: Pokemon name
+          example: mewtwo
+        description:
+          type: string
+          description: Pokemon description (possibly translated)
+          example: Created by a scientist after years of horrific gene splicing and dna engineering experiments, it was.
+        habitat:
+          type: string
+          description: Pokemon's natural habitat
+          example: rare
+        legendary:
+          type: boolean
+          description: Whether the Pokemon is legendary
+          example: true
+
+tags:
+  - name: Pokemon
+    description: Operations related to Pokemon information
